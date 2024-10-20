@@ -1,4 +1,4 @@
-import { Notifications, Search } from "@mui/icons-material";
+import { Notifications, Search, Menu as MenuIcon } from "@mui/icons-material";
 import {
   AppBar,
   Avatar,
@@ -10,13 +10,16 @@ import {
   Toolbar,
 } from "@mui/material";
 import { useState } from "react";
-import { useUserInfo } from "@hooks/useUserInfo.js";
+import { useDetectLayout, useUserInfo } from "@hooks/index.js";
+import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { toggleDrawer } from "@redux/slices/SettingsSlice";
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const userInfo = useUserInfo();
-
-  console.log({ userInfo });
+  const { isMediumLayout } = useDetectLayout();
+  const dispatch = useDispatch();
 
   const handleMenuClose = () => {
     setAnchorEl(null);
@@ -48,22 +51,36 @@ const Header = () => {
     <div>
       <AppBar color="white" position="static" className="py-4">
         <Toolbar className="!min-h-fit justify-between">
-          <div className="flex items-center gap-4">
-            <img src="/weconnect-logo.png" alt="" className="h-8 w-8" />
-            <div className="flex items-center gap-1">
-              <Search />
-              <TextField
-                variant="standard"
-                name="search"
-                placeholder="Search"
-                slotProps={{
-                  input: { className: "h-10 px-3 py-2" },
-                  htmlInput: { className: "!p-0" },
-                }}
-              />
+          {isMediumLayout ? (
+            <IconButton onClick={() => dispatch(toggleDrawer())}>
+              <MenuIcon />
+            </IconButton>
+          ) : (
+            <div className="flex items-center gap-4">
+              <Link to="/">
+                <img src="/weconnect-logo.png" alt="" className="h-8 w-8" />
+              </Link>
+              <div className="flex items-center gap-1">
+                <Search />
+                <TextField
+                  variant="standard"
+                  name="search"
+                  placeholder="Search"
+                  slotProps={{
+                    input: { className: "h-10 px-3 py-2" },
+                    htmlInput: { className: "!p-0" },
+                  }}
+                  sx={{
+                    ".MuiInputBase-root::before": {
+                      display: "none",
+                    },
+                  }}
+                />
+              </div>
             </div>
-          </div>
+          )}
           <div>
+            {isMediumLayout && <Search />}
             <IconButton size="medium">
               <Badge badgeContent={4} color="error">
                 <Notifications />
@@ -71,7 +88,9 @@ const Header = () => {
             </IconButton>
             <IconButton size="medium" onClick={handleUserProfileClick}>
               {/* <AccountCircle /> */}
-              <Avatar className="!bg-primary-main">{userInfo.fullName?.[0]?.toUpperCase()}</Avatar>
+              <Avatar className="!bg-primary-main">
+                {userInfo.fullName?.[0]?.toUpperCase()}
+              </Avatar>
             </IconButton>
           </div>
         </Toolbar>

@@ -1,6 +1,8 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import authReducer from "./slices/authSlice";
 import snackbarReducer from "./slices/snackBarSlice";
+import settingsReducer from "./slices/SettingsSlice";
+import dialogReducer from "./slices/dialogSlice";
 import { rootApi } from "@services/rootApi";
 import storage from "redux-persist/lib/storage";
 import {
@@ -18,7 +20,7 @@ const persistConfig = {
   key: "rootApp",
   version: 1,
   storage,
-  blacklist: [rootApi.reducerPath],
+  blacklist: [rootApi.reducerPath, "dialog", "settings"],
 };
 
 const persistedReducer = persistReducer(
@@ -26,6 +28,8 @@ const persistedReducer = persistReducer(
   combineReducers({
     auth: authReducer,
     snackbar: snackbarReducer,
+    settings: settingsReducer,
+    dialog: dialogReducer,
     [rootApi.reducerPath]: rootApi.reducer,
   }),
 );
